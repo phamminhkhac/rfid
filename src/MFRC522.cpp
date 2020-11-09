@@ -1775,9 +1775,9 @@ bool MFRC522::MIFARE_OpenUidBackdoor(bool logErrors) {
 bool MFRC522::MIFARE_SetUid(byte *newUid, byte uidSize, bool logErrors) {
 	
 	// UID + BCC byte can not be larger than 16 together
-	if (!newUid || !uidSize || uidSize > 15) {
+	if (!newUid || !uidSize || uidSize > 16) {
 		if (logErrors) {
-			Serial.println(F("New UID buffer empty, size 0, or size > 15 given"));
+			Serial.println(F("New UID buffer empty, size 0, or size > 16 given"));
 		}
 		return false;
 	}
@@ -1877,13 +1877,13 @@ bool MFRC522::MIFARE_SetUid(byte *newUid, byte uidSize, bool logErrors) {
 bool MFRC522::MIFARE_UnbrickUidSector(bool logErrors) {
 	MIFARE_OpenUidBackdoor(logErrors);
 	
-	byte block0_buffer[] = {0x01, 0x02, 0x03, 0x04, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};	
+	byte block0_buffer[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	
 	// Write modified block 0 back to card
 	MFRC522::StatusCode status = MIFARE_Write((byte)0, block0_buffer, (byte)16);
 	if (status != STATUS_OK) {
 		if (logErrors) {
-			Serial.print(F("MIFARE_Write() failed: "));
+			Serial.print(F("MIFARE_UnbrickUidSector() failed: "));
 			Serial.println(GetStatusCodeName(status));
 		}
 		return false;
